@@ -1,7 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Tiny.Formats.Yaml;
 
 namespace Tiny
@@ -66,33 +66,17 @@ namespace Tiny
             return new TinyValue(value);
         }
 
+        [Obsolete]
         public static TinyToken Read(string path)
-        {
-            var format = new YamlFormat();
+            => new YamlFormat().Read(path);
 
-            using (var stream = new FileStream(path, FileMode.Open))
-            using (var reader = new StreamReader(stream, Encoding.UTF8))
-                return format.Read(reader);
-        }
-
+        [Obsolete]
         public void Write(string path)
-        {
-            using (var stream = new FileStream(path, FileMode.Create))
-            using (var writer = new StreamWriter(stream, Encoding.UTF8) { NewLine = "\n", })
-                Write(writer);
-        }
+            => new YamlFormat().Write(path, this);
 
-        public void Write(TextWriter writer) => WriteInternal(writer, null, 0);
-
-        internal abstract void WriteInternal(TextWriter writer, TinyToken parent, int indentLevel);
-
-        protected static void WriteIndent(TextWriter writer, int indentLevel)
-        {
-            if (indentLevel <= 0)
-                return;
-
-            writer.Write(new string(' ', indentLevel * 2));
-        }
+        [Obsolete]
+        public void Write(TextWriter writer)
+            => new YamlFormat().Write(writer, this);
     }
 
     public static class TinyTokenExtensions

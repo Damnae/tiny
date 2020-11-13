@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 
 namespace Tiny
 {
@@ -18,9 +17,6 @@ namespace Tiny
 
     public class TinyValue : TinyToken
     {
-        public const string BooleanTrue = "Yes";
-        public const string BooleanFalse = "No";
-
         private readonly object value;
         private readonly TinyTokenType type;
 
@@ -82,6 +78,9 @@ namespace Tiny
                 return typedValue;
 
             var targetType = typeof(T);
+            if (targetType == typeof(object))
+                return (T)value;
+
             if (type == TinyTokenType.Null)
             {
                 if (targetType == typeof(TinyArray))
@@ -107,46 +106,6 @@ namespace Tiny
             }
 
             return (T)Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
-        }
-
-        internal override void WriteInternal(TextWriter writer, TinyToken parent, int indentLevel)
-        {
-            if (indentLevel != 0)
-                throw new InvalidOperationException();
-
-            switch (type)
-            {
-                case TinyTokenType.Null:
-                    writer.WriteLine();
-                    break;
-                case TinyTokenType.String:
-                    writer.WriteLine("\"" + TinyUtil.EscapeString((string)value) + "\"");
-                    break;
-                case TinyTokenType.Integer:
-                    writer.WriteLine(value?.ToString());
-                    break;
-                case TinyTokenType.Float:
-                    if (value is float floatFloat)
-                        writer.WriteLine(floatFloat.ToString(CultureInfo.InvariantCulture));
-                    else if (value is double floatDouble)
-                        writer.WriteLine(floatDouble.ToString(CultureInfo.InvariantCulture));
-                    else if (value is decimal floatDecimal)
-                        writer.WriteLine(floatDecimal.ToString(CultureInfo.InvariantCulture));
-                    else if (value is string floatString)
-                        writer.WriteLine(floatString);
-                    else throw new InvalidDataException(value?.ToString());
-                    break;
-                case TinyTokenType.Boolean:
-                    writer.WriteLine(((bool)value) ? BooleanTrue : BooleanFalse);
-                    break;
-                case TinyTokenType.Array:
-                case TinyTokenType.Object:
-                case TinyTokenType.Invalid:
-                    // Should never happen :)
-                    throw new InvalidDataException(type.ToString());
-                default:
-                    throw new NotImplementedException(type.ToString());
-            }
         }
 
         public static TinyTokenType FindValueType(object value)

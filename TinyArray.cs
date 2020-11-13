@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Tiny
 {
@@ -53,32 +52,6 @@ namespace Tiny
                 return this[index].Value<T>();
 
             throw new ArgumentException($"Key must be an integer, was {key}", "key");
-        }
-
-        internal override void WriteInternal(TextWriter writer, TinyToken parent, int indentLevel)
-        {
-            var parentIsArray = parent != null && parent.Type == TinyTokenType.Array;
-
-            var first = true;
-            foreach (var token in tokens)
-            {
-                if (!first || !parentIsArray)
-                    WriteIndent(writer, indentLevel);
-
-                if (token.IsEmpty)
-                    writer.WriteLine("- ");
-                else if (token.IsInline)
-                {
-                    writer.Write("- ");
-                    token.WriteInternal(writer, this, 0);
-                }
-                else
-                {
-                    writer.Write("- ");
-                    token.WriteInternal(writer, this, indentLevel + 1);
-                }
-                first = false;
-            }
         }
 
         public override string ToString() => string.Join(", ", tokens);

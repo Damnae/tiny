@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace Tiny.Formats
 {
@@ -18,10 +19,26 @@ namespace Tiny.Formats
         protected abstract Tokenizer<TokenType> Tokenizer { get; }
         protected abstract TokenParser<TokenType> TokenParser { get; }
 
+        public TinyToken Read(string path)
+        {
+            using (var stream = new FileStream(path, FileMode.Open))
+            using (var reader = new StreamReader(stream, Encoding.UTF8))
+                return Read(reader);
+        }
+
         public TinyToken Read(TextReader reader)
         {
             var tokens = Tokenizer.Tokenize(reader);
             return TokenParser.Parse(tokens);
         }
+
+        public void Write(string path, TinyToken value)
+        {
+            using (var stream = new FileStream(path, FileMode.Create))
+            using (var writer = new StreamWriter(stream, Encoding.UTF8) { NewLine = "\n", })
+                Write(writer, value);
+        }
+
+        public abstract void Write(TextWriter writer, TinyToken value);
     }
 }

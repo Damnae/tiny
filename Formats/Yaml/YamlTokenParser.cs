@@ -103,7 +103,7 @@ namespace Tiny.Formats.Yaml
 
                         var key = context.CurrentToken.Value;
                         if (context.CurrentToken.Type == YamlTokenType.PropertyQuoted)
-                            key = TinyUtil.UnescapeString(key);
+                            key = YamlUtil.UnescapeString(key);
 
                         switch (context.LookaheadToken.Type)
                         {
@@ -164,7 +164,7 @@ namespace Tiny.Formats.Yaml
         {
             private static readonly Regex floatRegex = new Regex("^[-+]?[0-9]*\\.[0-9]+$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
             private static readonly Regex integerRegex = new Regex("^[-+]?\\d+$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            private static readonly Regex boolRegex = new Regex($"^{TinyValue.BooleanTrue}|{TinyValue.BooleanFalse}$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            private static readonly Regex boolRegex = new Regex($"^{YamlFormat.BooleanTrue}|{YamlFormat.BooleanFalse}$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
             public ValueParser(Action<TinyToken> callback) : base(callback, 0)
             {
@@ -191,7 +191,7 @@ namespace Tiny.Formats.Yaml
                             else if ((match = integerRegex.Match(value)).Success)
                                 Callback(new TinyValue(value, TinyTokenType.Integer));
                             else if ((match = boolRegex.Match(value)).Success)
-                                Callback(new TinyValue(value == TinyValue.BooleanTrue));
+                                Callback(new TinyValue(value == YamlFormat.BooleanTrue));
                             else
                                 Callback(new TinyValue(value));
                             context.ConsumeToken();
@@ -201,7 +201,7 @@ namespace Tiny.Formats.Yaml
 
                     case YamlTokenType.WordQuoted:
                         {
-                            var value = TinyUtil.UnescapeString(context.CurrentToken.Value);
+                            var value = YamlUtil.UnescapeString(context.CurrentToken.Value);
                             Callback(new TinyValue(value));
                             context.ConsumeToken();
                             context.PopParser();

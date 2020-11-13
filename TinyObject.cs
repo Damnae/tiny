@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 
 namespace Tiny
 {
@@ -44,37 +43,6 @@ namespace Tiny
                 return properties[index].Value.Value<T>();
 
             throw new ArgumentException($"Key must be an integer or a string, was {key}", "key");
-        }
-
-        internal override void WriteInternal(TextWriter writer, TinyToken parent, int indentLevel)
-        {
-            var parentIsArray = parent != null && parent.Type == TinyTokenType.Array;
-
-            var first = true;
-            foreach (var property in properties)
-            {
-                if (!first || !parentIsArray)
-                    WriteIndent(writer, indentLevel);
-
-                var key = property.Key;
-                if (key.Contains(" ") || key.Contains(":") || key.StartsWith("-"))
-                    key = "\"" + TinyUtil.EscapeString(key) + "\"";
-
-                var value = property.Value;
-                if (value.IsEmpty)
-                    writer.WriteLine(key + ":");
-                else if (value.IsInline)
-                {
-                    writer.Write(key + ": ");
-                    value.WriteInternal(writer, this, 0);
-                }
-                else
-                {
-                    writer.WriteLine(key + ":");
-                    value.WriteInternal(writer, this, indentLevel + 1);
-                }
-                first = false;
-            }
         }
 
         public override string ToString() => string.Join(", ", properties);

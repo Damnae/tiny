@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace Tiny
+namespace Tiny.Formats.Yaml
 {
-    public class TinyUtil
+    public class YamlUtil
     {
         public static string EscapeString(string value)
         {
