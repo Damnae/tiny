@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Tiny
+namespace Tiny.Formats.Yaml
 {
-    internal class TinyTokenParser
+    public partial class YamlTokenParser : TokenParser<YamlTokenType>
     {
-        public static TinyToken Parse(IEnumerable<TinyTokenizer.Token> tokens)
+        public TinyToken Parse(IEnumerable<Token<YamlTokenType>> tokens)
         {
             TinyToken result = null;
-            var context = new ParseContext(tokens, r => result = r);
+            var context = new ParseContext<YamlTokenType>(tokens, c => new AnyParser(c), r => result = r);
 
-            TinyTokenizer.Token previousToken = null;
+            Token<YamlTokenType> previousToken = null;
             while (context.CurrentToken != null)
             {
                 if (context.CurrentToken != previousToken)
@@ -22,14 +21,14 @@ namespace Tiny
                     previousToken = context.CurrentToken;
                 }
 
-                switch (context.CurrentToken.TokenType)
+                switch (context.CurrentToken.Type)
                 {
-                    case TinyTokenizer.TokenType.Indent:
+                    case YamlTokenType.Indent:
                         context.Indent(context.CurrentToken.Value.Length / 2);
                         context.ConsumeToken();
                         continue;
 
-                    case TinyTokenizer.TokenType.EndLine:
+                    case YamlTokenType.EndLine:
                         context.NewLine();
                         context.ConsumeToken();
                         continue;
@@ -47,83 +46,7 @@ namespace Tiny
             return result;
         }
 
-        private class ParseContext
-        {
-            private readonly IEnumerator<TinyTokenizer.Token> tokenEnumerator;
-
-            public TinyTokenizer.Token CurrentToken;
-            public TinyTokenizer.Token LookaheadToken;
-
-            private readonly Stack<Parser> parserStack;
-            public Parser Parser => parserStack.Count > 0 ? parserStack.Peek() : null;
-            public int ParserCount => parserStack.Count;
-
-            public int IndentLevel { get; private set; }
-
-            public ParseContext(IEnumerable<TinyTokenizer.Token> tokens, Action<TinyToken> callback)
-            {
-                tokenEnumerator = tokens.GetEnumerator();
-                initializeCurrentAndLookahead();
-
-                parserStack = new Stack<Parser>();
-                parserStack.Push(new AnyParser(callback));
-            }
-
-            public void PopParser()
-            {
-                parserStack.Pop();
-            }
-
-            public void PushParser(Parser parser)
-            {
-                parserStack.Push(parser);
-            }
-
-            public void ReplaceParser(Parser parser)
-            {
-                parserStack.Pop();
-                parserStack.Push(parser);
-            }
-
-            public void Indent(int level)
-            {
-                IndentLevel = level;
-            }
-
-            public void NewLine()
-            {
-                IndentLevel = 0;
-            }
-
-            public void ConsumeToken()
-            {
-                CurrentToken = LookaheadToken;
-                LookaheadToken = tokenEnumerator.MoveNext() ? tokenEnumerator.Current : null;
-            }
-
-            private void initializeCurrentAndLookahead()
-            {
-                ConsumeToken();
-                ConsumeToken();
-            }
-        }
-
-        private abstract class Parser
-        {
-            protected readonly Action<TinyToken> Callback;
-            protected readonly int VirtualIndent;
-
-            public Parser(Action<TinyToken> callback, int virtualIndent)
-            {
-                Callback = callback;
-                VirtualIndent = virtualIndent;
-            }
-
-            public abstract void Parse(ParseContext context);
-            public abstract void End();
-        }
-
-        private abstract class MultilineParser : Parser
+        private abstract class MultilineParser : Parser<YamlTokenType>
         {
             private int? indent = null;
 
@@ -133,7 +56,7 @@ namespace Tiny
             {
             }
 
-            protected bool CheckIndent(ParseContext context)
+            protected bool CheckIndent(ParseContext<YamlTokenType> context)
             {
                 indent = indent ?? context.IndentLevel + VirtualIndent;
                 var lineIndent = ResultCount == 0 ? context.IndentLevel + VirtualIndent : context.IndentLevel;
@@ -160,35 +83,35 @@ namespace Tiny
                 callback(result);
             }
 
-            public override void Parse(ParseContext context)
+            public override void Parse(ParseContext<YamlTokenType> context)
             {
                 if (CheckIndent(context))
                     return;
 
-                switch (context.LookaheadToken.TokenType)
+                switch (context.LookaheadToken.Type)
                 {
-                    case TinyTokenizer.TokenType.ArrayIndicator:
-                    case TinyTokenizer.TokenType.Property:
-                    case TinyTokenizer.TokenType.PropertyQuoted:
+                    case YamlTokenType.ArrayIndicator:
+                    case YamlTokenType.Property:
+                    case YamlTokenType.PropertyQuoted:
                         throw new InvalidDataException("Unexpected token: " + context.LookaheadToken + ", after: " + context.CurrentToken);
                 }
 
-                switch (context.CurrentToken.TokenType)
+                switch (context.CurrentToken.Type)
                 {
-                    case TinyTokenizer.TokenType.Property:
-                    case TinyTokenizer.TokenType.PropertyQuoted:
+                    case YamlTokenType.Property:
+                    case YamlTokenType.PropertyQuoted:
 
                         var key = context.CurrentToken.Value;
-                        if (context.CurrentToken.TokenType == TinyTokenizer.TokenType.PropertyQuoted)
+                        if (context.CurrentToken.Type == YamlTokenType.PropertyQuoted)
                             key = TinyUtil.UnescapeString(key);
 
-                        switch (context.LookaheadToken.TokenType)
+                        switch (context.LookaheadToken.Type)
                         {
-                            case TinyTokenizer.TokenType.Word:
-                            case TinyTokenizer.TokenType.WordQuoted:
+                            case YamlTokenType.Word:
+                            case YamlTokenType.WordQuoted:
                                 context.PushParser(new ValueParser(r => result.Add(key, r)));
                                 break;
-                            case TinyTokenizer.TokenType.EndLine:
+                            case YamlTokenType.EndLine:
                                 context.PushParser(new EmptyProperyParser(r => result.Add(key, r), context.IndentLevel + 1));
                                 break;
                             default:
@@ -216,14 +139,14 @@ namespace Tiny
                 callback(result);
             }
 
-            public override void Parse(ParseContext context)
+            public override void Parse(ParseContext<YamlTokenType> context)
             {
                 if (CheckIndent(context))
                     return;
 
-                switch (context.CurrentToken.TokenType)
+                switch (context.CurrentToken.Type)
                 {
-                    case TinyTokenizer.TokenType.ArrayIndicator:
+                    case YamlTokenType.ArrayIndicator:
                         context.PushParser(new AnyParser(r => result.Add(r), result.Count == 0 ? VirtualIndent + 1 : 1));
                         context.ConsumeToken();
                         return;
@@ -237,7 +160,7 @@ namespace Tiny
             }
         }
 
-        private class ValueParser : Parser
+        private class ValueParser : Parser<YamlTokenType>
         {
             private static readonly Regex floatRegex = new Regex("^[-+]?[0-9]*\\.[0-9]+$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
             private static readonly Regex integerRegex = new Regex("^[-+]?\\d+$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -247,19 +170,19 @@ namespace Tiny
             {
             }
 
-            public override void Parse(ParseContext context)
+            public override void Parse(ParseContext<YamlTokenType> context)
             {
-                switch (context.LookaheadToken.TokenType)
+                switch (context.LookaheadToken.Type)
                 {
-                    case TinyTokenizer.TokenType.EndLine:
+                    case YamlTokenType.EndLine:
                         break;
                     default:
                         throw new InvalidDataException("Unexpected token: " + context.LookaheadToken + ", after: " + context.CurrentToken);
                 }
 
-                switch (context.CurrentToken.TokenType)
+                switch (context.CurrentToken.Type)
                 {
-                    case TinyTokenizer.TokenType.Word:
+                    case YamlTokenType.Word:
                         {
                             var value = context.CurrentToken.Value;
                             Match match;
@@ -276,7 +199,7 @@ namespace Tiny
                         }
                         return;
 
-                    case TinyTokenizer.TokenType.WordQuoted:
+                    case YamlTokenType.WordQuoted:
                         {
                             var value = TinyUtil.UnescapeString(context.CurrentToken.Value);
                             Callback(new TinyValue(value));
@@ -294,25 +217,25 @@ namespace Tiny
             }
         }
 
-        private class AnyParser : Parser
+        private class AnyParser : Parser<YamlTokenType>
         {
             public AnyParser(Action<TinyToken> callback, int virtualIndent = 0) : base(callback, virtualIndent)
             {
             }
 
-            public override void Parse(ParseContext context)
+            public override void Parse(ParseContext<YamlTokenType> context)
             {
-                switch (context.CurrentToken.TokenType)
+                switch (context.CurrentToken.Type)
                 {
-                    case TinyTokenizer.TokenType.Property:
-                    case TinyTokenizer.TokenType.PropertyQuoted:
+                    case YamlTokenType.Property:
+                    case YamlTokenType.PropertyQuoted:
                         context.ReplaceParser(new ObjectParser(Callback, VirtualIndent));
                         return;
-                    case TinyTokenizer.TokenType.ArrayIndicator:
+                    case YamlTokenType.ArrayIndicator:
                         context.ReplaceParser(new ArrayParser(Callback, VirtualIndent));
                         return;
-                    case TinyTokenizer.TokenType.Word:
-                    case TinyTokenizer.TokenType.WordQuoted:
+                    case YamlTokenType.Word:
+                    case YamlTokenType.WordQuoted:
                         context.ReplaceParser(new ValueParser(Callback));
                         return;
                 }
@@ -324,7 +247,7 @@ namespace Tiny
             }
         }
 
-        private class EmptyProperyParser : Parser
+        private class EmptyProperyParser : Parser<YamlTokenType>
         {
             private readonly int expectedIndent;
 
@@ -333,7 +256,7 @@ namespace Tiny
                 this.expectedIndent = expectedIndent;
             }
 
-            public override void Parse(ParseContext context)
+            public override void Parse(ParseContext<YamlTokenType> context)
             {
                 if (context.IndentLevel < expectedIndent)
                 {

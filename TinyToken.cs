@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Tiny.Formats.Yaml;
 
 namespace Tiny
 {
@@ -67,15 +68,11 @@ namespace Tiny
 
         public static TinyToken Read(string path)
         {
+            var format = new YamlFormat();
+
             using (var stream = new FileStream(path, FileMode.Open))
             using (var reader = new StreamReader(stream, Encoding.UTF8))
-                return Read(reader);
-        }
-
-        public static TinyToken Read(TextReader reader)
-        {
-            var tokens = TinyTokenizer.Tokenize(reader);
-            return TinyTokenParser.Parse(tokens);
+                return format.Read(reader);
         }
 
         public void Write(string path)

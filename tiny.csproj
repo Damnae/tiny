@@ -37,14 +37,21 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Formats\Format.cs" />
+    <Compile Include="Formats\Token.cs" />
+    <Compile Include="Formats\ParseContext.cs" />
+    <Compile Include="Formats\Parser.cs" />
+    <Compile Include="Formats\Yaml\YamlFormat.cs" />
+    <Compile Include="Formats\Yaml\YamlTokenType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TinyArray.cs" />
     <Compile Include="TinyObject.cs" />
     <Compile Include="TinyToken.cs" />
-    <Compile Include="TinyTokenizer.cs" />
-    <Compile Include="TinyTokenParser.cs" />
+    <Compile Include="Formats\RegexTokenizer.cs" />
+    <Compile Include="Formats\Yaml\YamlTokenParser.cs" />
     <Compile Include="TinyUtil.cs" />
     <Compile Include="TinyValue.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -3,37 +3,20 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Tiny
+namespace Tiny.Formats
 {
-    internal class TinyTokenizer
+    public class RegexTokenizer<TokenType> : Tokenizer<TokenType>
     {
-        private static readonly List<TokenDefinition> definitions = new List<TokenDefinition>()
+        private readonly List<Definition> definitions;
+        private readonly TokenType endToken;
+
+        public RegexTokenizer(List<Definition> definitions, TokenType endToken)
         {
-            new TokenDefinition(TokenType.Indent, "^(  )+", 1, captureGroup: 0),
-
-            new TokenDefinition(TokenType.PropertyQuoted, @"""((?:[^""\\]|\\.)*)"" *:", 4),
-            new TokenDefinition(TokenType.WordQuoted, @"""((?:[^""\\]|\\.)*)""", 5),
-
-            new TokenDefinition(TokenType.ArrayIndicator, "- ", 10),
-
-            new TokenDefinition(TokenType.Property, "([^\\s:-][^\\s:]*) *:", 20),
-            new TokenDefinition(TokenType.Word, "[^\\s:]+", 21),
-
-            new TokenDefinition(TokenType.EndLine, "\n", 100),
-        };
-
-        public enum TokenType
-        {
-            Indent,
-            PropertyQuoted,
-            Property,
-            WordQuoted,
-            Word,
-            ArrayIndicator,
-            EndLine,
+            this.definitions = definitions;
+            this.endToken = endToken;
         }
 
-        public static IEnumerable<Token> Tokenize(TextReader reader)
+        public IEnumerable<Token<TokenType>> Tokenize(TextReader reader)
         {
             string line;
             int lineNumber = 1;
@@ -49,7 +32,7 @@ namespace Tiny
             }
         }
 
-        public static IEnumerable<Token> Tokenize(string content)
+        public IEnumerable<Token<TokenType>> Tokenize(string content)
         {
             var matches = definitions
                 .SelectMany(d => d.FindMatches(content));
@@ -58,7 +41,7 @@ namespace Tiny
                 .GroupBy(m => m.StartIndex)
                 .OrderBy(g => g.Key);
 
-            TokenDefinition.Match previousMatch = null;
+            Definition.Match previousMatch = null;
             foreach (var byStartGroup in byStartGroups)
             {
                 var bestMatch = byStartGroup
@@ -68,36 +51,21 @@ namespace Tiny
                 if (previousMatch != null && bestMatch.StartIndex < previousMatch.EndIndex)
                     continue;
 
-                yield return new Token(bestMatch.Type, bestMatch.Value);
+                yield return new Token<TokenType>(bestMatch.Type, bestMatch.Value);
                 previousMatch = bestMatch;
             }
 
-            yield return new Token(TokenType.EndLine);
+            yield return new Token<TokenType>(endToken);
         }
 
-        public class Token
+        public class Definition
         {
-            public TokenType TokenType;
-            public string Value;
-            public int LineNumber;
-
-            public Token(TokenType tokenType, string value = null)
-            {
-                TokenType = tokenType;
-                Value = value;
-            }
-
-            public override string ToString() => $"{TokenType} <{Value}> (line {LineNumber})";
-        }
-
-        private class TokenDefinition
-        {
-            private Regex regex;
+            private readonly Regex regex;
             private readonly TokenType matchType;
             private readonly int priority;
             private readonly int captureGroup;
 
-            public TokenDefinition(TokenType matchType, string regexPattern, int priority, int captureGroup = 1)
+            public Definition(TokenType matchType, string regexPattern, int priority, int captureGroup = 1)
             {
                 regex = new Regex(regexPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
                 this.matchType = matchType;
