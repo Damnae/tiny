@@ -11,6 +11,5 @@
         ValueSeparator,
         Property,
         Word,
-        EndLine,
     }
 }

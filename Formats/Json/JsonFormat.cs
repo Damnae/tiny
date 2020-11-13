@@ -23,11 +23,9 @@ namespace Tiny.Formats.Json
 
             new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.Property, "([^\\s:,{}\\[\\]]*) *:", 30),
             new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.Word, "[^\\s:,{}\\[\\]]+", 31),
-
-            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.EndLine, "\n", 100),
         };
 
-        protected override Tokenizer<JsonTokenType> Tokenizer { get; } = new RegexTokenizer<JsonTokenType>(definitions, JsonTokenType.EndLine);
+        protected override Tokenizer<JsonTokenType> Tokenizer { get; } = new RegexTokenizer<JsonTokenType>(definitions, null);
         protected override TokenParser<JsonTokenType> TokenParser { get; } = new JsonTokenParser();
 
         public override void Write(TextWriter writer, TinyToken value)

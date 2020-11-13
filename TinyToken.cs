@@ -94,9 +94,6 @@ namespace Tiny
                 yield return token.Value<T>();
         }
 
-        public static TinyArray AsArray(this TinyToken token)
-            => (TinyArray)token;
-
         public static IEnumerable<T> Values<T>(this TinyToken token, object key)
             => token.Value<TinyArray>(key).Values<T>();
     }

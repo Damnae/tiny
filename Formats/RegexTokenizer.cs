@@ -6,14 +6,15 @@ using System.Text.RegularExpressions;
 namespace Tiny.Formats
 {
     public class RegexTokenizer<TokenType> : Tokenizer<TokenType>
+        where TokenType : struct
     {
         private readonly List<Definition> definitions;
-        private readonly TokenType endToken;
+        private readonly TokenType? endLineToken;
 
-        public RegexTokenizer(List<Definition> definitions, TokenType endToken)
+        public RegexTokenizer(List<Definition> definitions, TokenType? endLineToken)
         {
             this.definitions = definitions;
-            this.endToken = endToken;
+            this.endLineToken = endLineToken;
         }
 
         public IEnumerable<Token<TokenType>> Tokenize(TextReader reader)
@@ -58,7 +59,8 @@ namespace Tiny.Formats
                 previousMatch = bestMatch;
             }
 
-            yield return new Token<TokenType>(endToken);
+            if (endLineToken.HasValue)
+                yield return new Token<TokenType>(endLineToken.Value);
         }
 
         public class Definition
