@@ -5,6 +5,7 @@
         public TokenType Type;
         public string Value;
         public int LineNumber;
+        public int CharNumber;
 
         public Token(TokenType type, string value = null)
         {
@@ -12,6 +13,6 @@
             Value = value;
         }
 
-        public override string ToString() => $"{Type} <{Value}> (line {LineNumber})";
+        public override string ToString() => $"{Type} <{Value}> (line {LineNumber}, char {CharNumber})";
     }
 }

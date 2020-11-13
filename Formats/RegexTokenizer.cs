@@ -51,7 +51,10 @@ namespace Tiny.Formats
                 if (previousMatch != null && bestMatch.StartIndex < previousMatch.EndIndex)
                     continue;
 
-                yield return new Token<TokenType>(bestMatch.Type, bestMatch.Value);
+                yield return new Token<TokenType>(bestMatch.Type, bestMatch.Value)
+                {
+                    CharNumber = bestMatch.StartIndex,
+                };
                 previousMatch = bestMatch;
             }
 

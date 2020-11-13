@@ -14,7 +14,16 @@ namespace Tiny.Formats
         TinyToken Parse(IEnumerable<Token<TokenType>> tokens);
     }
 
-    public abstract class Format<TokenType>
+    public interface Format
+    {
+        TinyToken Read(string path);
+        TinyToken ReadString(string data);
+        TinyToken Read(TextReader reader);
+        void Write(string path, TinyToken value);
+        void Write(TextWriter writer, TinyToken value);
+    }
+
+    public abstract class Format<TokenType> : Format
     {
         protected abstract Tokenizer<TokenType> Tokenizer { get; }
         protected abstract TokenParser<TokenType> TokenParser { get; }
@@ -23,6 +32,12 @@ namespace Tiny.Formats
         {
             using (var stream = new FileStream(path, FileMode.Open))
             using (var reader = new StreamReader(stream, Encoding.UTF8))
+                return Read(reader);
+        }
+
+        public TinyToken ReadString(string data)
+        {
+            using (var reader = new StringReader(data))
                 return Read(reader);
         }
 

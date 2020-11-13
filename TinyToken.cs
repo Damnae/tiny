@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Tiny.Formats;
+using Tiny.Formats.Json;
 using Tiny.Formats.Yaml;
 
 namespace Tiny
@@ -66,17 +68,22 @@ namespace Tiny
             return new TinyValue(value);
         }
 
-        [Obsolete]
         public static TinyToken Read(string path)
-            => new YamlFormat().Read(path);
+            => getFormat(path).Read(path);
 
-        [Obsolete]
         public void Write(string path)
-            => new YamlFormat().Write(path, this);
+            => getFormat(path).Write(path, this);
 
-        [Obsolete]
-        public void Write(TextWriter writer)
-            => new YamlFormat().Write(writer, this);
+        private static Format getFormat(string path)
+        {
+            var extension = Path.GetExtension(path);
+            switch (Path.GetExtension(path))
+            {
+                case ".yaml": return new YamlFormat();
+                case ".json": return new JsonFormat();
+            }
+            throw new NotImplementedException($"No format matches extension '{extension}'.");
+        }
     }
 
     public static class TinyTokenExtensions
@@ -86,6 +93,9 @@ namespace Tiny
             foreach (var token in tokens)
                 yield return token.Value<T>();
         }
+
+        public static TinyArray AsArray(this TinyToken token)
+            => (TinyArray)token;
 
         public static IEnumerable<T> Values<T>(this TinyToken token, object key)
             => token.Value<TinyArray>(key).Values<T>();

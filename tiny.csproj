@@ -38,6 +38,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Formats\Format.cs" />
+    <Compile Include="Formats\Json\JsonFormat.cs" />
+    <Compile Include="Formats\Json\JsonTokenType.cs" />
+    <Compile Include="Formats\Json\JsonTokenParser.cs" />
+    <Compile Include="Formats\Json\JsonUtil.cs" />
     <Compile Include="Formats\Token.cs" />
     <Compile Include="Formats\ParseContext.cs" />
     <Compile Include="Formats\Parser.cs" />
