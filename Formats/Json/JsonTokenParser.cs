@@ -14,14 +14,6 @@ namespace Tiny.Formats.Json
 
             while (context.CurrentToken != null)
             {
-                switch (context.CurrentToken.Type)
-                {
-                    case JsonTokenType.EndLine:
-                        context.NewLine();
-                        context.ConsumeToken();
-                        continue;
-                }
-
                 //Debug.Print($"  - {context.Parser.GetType().Name} ({context.ParserCount}) {context.CurrentToken}");
                 context.Parser.Parse(context);
             }
