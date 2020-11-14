@@ -96,5 +96,19 @@ namespace Tiny
 
         public static IEnumerable<T> Values<T>(this TinyToken token, object key)
             => token.Value<TinyArray>(key).Values<T>();
+
+        public static T Value<T>(this TinyToken token, object key1, object key2)
+            => token.Value<TinyToken>(key1).Value<T>(key2);
+
+        public static T Value<T>(this TinyToken token, object key1, object key2, object key3)
+            => token.Value<TinyToken>(key1).Value<TinyToken>(key2).Value<T>(key3);
+
+        public static T Value<T>(this TinyToken token, params object[] keys)
+        {
+            for (var i = 0; i < keys.Length - 1; i++)
+                token = token.Value<TinyToken>(keys[i]);
+
+            return token.Value<T>(keys[keys.Length - 1]);
+        }
     }
 }
