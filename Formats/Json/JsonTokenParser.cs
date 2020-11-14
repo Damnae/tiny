@@ -10,19 +10,14 @@ namespace Tiny.Formats.Json
         public TinyToken Parse(IEnumerable<Token<JsonTokenType>> tokens)
         {
             TinyToken result = null;
-            var context = new ParseContext<JsonTokenType>(tokens, c => new AnyParser(c), r => result = r);
 
+            var context = new ParseContext<JsonTokenType>(tokens, new AnyParser(r => result = r));
             while (context.CurrentToken != null)
             {
                 //Debug.Print($"  - {context.Parser.GetType().Name} ({context.ParserCount}) {context.CurrentToken}");
                 context.Parser.Parse(context);
             }
-
-            while (context.Parser != null)
-            {
-                context.Parser.End();
-                context.PopParser();
-            }
+            context.End();
 
             return result;
         }

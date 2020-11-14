@@ -10,19 +10,18 @@ namespace Tiny.Formats
         public Token<TokenType> CurrentToken;
         public Token<TokenType> LookaheadToken;
 
-        private readonly Stack<Parser<TokenType>> parserStack;
+        private readonly Stack<Parser<TokenType>> parserStack = new Stack<Parser<TokenType>>();
         public Parser<TokenType> Parser => parserStack.Count > 0 ? parserStack.Peek() : null;
         public int ParserCount => parserStack.Count;
 
         public int IndentLevel { get; private set; }
 
-        public ParseContext(IEnumerable<Token<TokenType>> tokens, Func<Action<TinyToken>, Parser<TokenType>> createInitialParser, Action<TinyToken> callback)
+        public ParseContext(IEnumerable<Token<TokenType>> tokens, Parser<TokenType> initialParser)
         {
             tokenEnumerator = tokens.GetEnumerator();
             initializeCurrentAndLookahead();
 
-            parserStack = new Stack<Parser<TokenType>>();
-            parserStack.Push(createInitialParser(callback));
+            parserStack.Push(initialParser);
         }
 
         public void PopParser()
@@ -55,6 +54,15 @@ namespace Tiny.Formats
         {
             CurrentToken = LookaheadToken;
             LookaheadToken = tokenEnumerator.MoveNext() ? tokenEnumerator.Current : null;
+        }
+
+        public void End()
+        {
+            while (Parser != null)
+            {
+                Parser.End();
+                PopParser();
+            }
         }
 
         private void initializeCurrentAndLookahead()

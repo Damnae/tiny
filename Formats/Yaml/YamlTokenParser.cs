@@ -10,17 +10,10 @@ namespace Tiny.Formats.Yaml
         public TinyToken Parse(IEnumerable<Token<YamlTokenType>> tokens)
         {
             TinyToken result = null;
-            var context = new ParseContext<YamlTokenType>(tokens, c => new AnyParser(c), r => result = r);
 
-            Token<YamlTokenType> previousToken = null;
+            var context = new ParseContext<YamlTokenType>(tokens, new AnyParser(r => result = r));
             while (context.CurrentToken != null)
             {
-                if (context.CurrentToken != previousToken)
-                {
-                    //Debug.Print($"{context.CurrentToken}");
-                    previousToken = context.CurrentToken;
-                }
-
                 switch (context.CurrentToken.Type)
                 {
                     case YamlTokenType.Indent:
@@ -36,12 +29,7 @@ namespace Tiny.Formats.Yaml
                 //Debug.Print($"  - {context.Parser.GetType().Name} ({context.ParserCount})");
                 context.Parser.Parse(context);
             }
-
-            while (context.Parser != null)
-            {
-                context.Parser.End();
-                context.PopParser();
-            }
+            context.End();
 
             return result;
         }
