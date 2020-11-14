@@ -71,6 +71,10 @@ namespace Tiny
         public static TinyToken Read(string path)
             => getFormat(path).Read(path);
 
+        public static TinyToken ReadString<F>(string data)
+            where F : Format, new()
+            => new F().ReadString(data);
+
         public void Write(string path)
             => getFormat(path).Write(path, this);
 
