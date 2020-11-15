@@ -123,7 +123,7 @@ namespace Tiny
                 yield return token.Value<T>();
         }
 
-        public static IEnumerable<T> Values<T>(this TinyToken token, object key)
+        public static IEnumerable<T> Values<T>(this TinyToken token, object key = null)
             => token.Value<TinyArray>(key).Values<T>();
 
         public static T Value<T>(this TinyToken token, object key1, object key2)
