@@ -11,18 +11,18 @@ namespace Tiny.Formats.Json
 
         private static readonly List<RegexTokenizer<JsonTokenType>.Definition> definitions = new List<RegexTokenizer<JsonTokenType>.Definition>()
         {
-            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.PropertyQuoted, @"""((?:[^""\\]|\\.)*)"" *:", 4),
-            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.WordQuoted, @"""((?:[^""\\]|\\.)*)""", 5),
+            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.PropertyQuoted, @"""((?:[^""\\]|\\.)*)"" *:"),
+            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.WordQuoted, @"""((?:[^""\\]|\\.)*)"""),
 
-            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.ObjectStart, "{", 10),
-            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.ObjectEnd, "}", 11),
-            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.ArrayStart, "\\[", 12),
-            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.ArrayEnd, "]", 13),
+            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.ObjectStart, "{"),
+            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.ObjectEnd, "}"),
+            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.ArrayStart, "\\["),
+            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.ArrayEnd, "]"),
 
-            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.ValueSeparator, ",", 20),
+            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.ValueSeparator, ","),
 
-            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.Property, "([^\\s:,{}\\[\\]]*) *:", 30),
-            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.Word, "[^\\s:,{}\\[\\]]+", 31),
+            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.Property, "([^\\s:,{}\\[\\]]*) *:"),
+            new RegexTokenizer<JsonTokenType>.Definition(JsonTokenType.Word, "[^\\s:,{}\\[\\]]+"),
         };
 
         protected override Tokenizer<JsonTokenType> Tokenizer { get; } = new RegexTokenizer<JsonTokenType>(definitions, null);

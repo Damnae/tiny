@@ -36,7 +36,7 @@ namespace Tiny.Formats
         public IEnumerable<Token<TokenType>> Tokenize(string content)
         {
             var matches = definitions
-                .SelectMany(d => d.FindMatches(content));
+                .SelectMany((d, i) => d.FindMatches(content, i));
 
             var byStartGroups = matches
                 .GroupBy(m => m.StartIndex)
@@ -67,18 +67,16 @@ namespace Tiny.Formats
         {
             private readonly Regex regex;
             private readonly TokenType matchType;
-            private readonly int priority;
             private readonly int captureGroup;
 
-            public Definition(TokenType matchType, string regexPattern, int priority, int captureGroup = 1)
+            public Definition(TokenType matchType, string regexPattern, int captureGroup = 1)
             {
                 regex = new Regex(regexPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
                 this.matchType = matchType;
-                this.priority = priority;
                 this.captureGroup = captureGroup;
             }
 
-            public IEnumerable<Match> FindMatches(string input)
+            public IEnumerable<Match> FindMatches(string input, int priority)
             {
                 var matches = regex.Matches(input);
                 foreach (System.Text.RegularExpressions.Match match in matches)
@@ -94,7 +92,7 @@ namespace Tiny.Formats
                     };
             }
 
-            public override string ToString() => $"regex:{regex}, matchType:{matchType}, priority:{priority}, captureGroup:{captureGroup}";
+            public override string ToString() => $"regex:{regex}, matchType:{matchType}, captureGroup:{captureGroup}";
 
             public class Match
             {
