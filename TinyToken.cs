@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Tiny.Formats;
 using Tiny.Formats.Json;
 using Tiny.Formats.Yaml;
@@ -68,17 +69,41 @@ namespace Tiny
             return new TinyValue(value);
         }
 
+        public static TinyToken Read(Stream stream, Format format)
+        {
+            using (var reader = new StreamReader(stream, Encoding.UTF8))
+                return format.Read(reader);
+        }
+
         public static TinyToken Read(string path)
-            => getFormat(path).Read(path);
+        {
+            using (var stream = new FileStream(path, FileMode.Open))
+                return Read(stream, GetFormat(path));
+        }
+
+        public static TinyToken ReadString(string data, Format format)
+        {
+            using (var reader = new StringReader(data))
+                return format.Read(reader);
+        }
 
         public static TinyToken ReadString<F>(string data)
             where F : Format, new()
-            => new F().ReadString(data);
+            => ReadString(data, new F());
+
+        public void Write(Stream stream, Format format)
+        {
+            using (var writer = new StreamWriter(stream, Encoding.UTF8) { NewLine = "\n", })
+                format.Write(writer, this);
+        }
 
         public void Write(string path)
-            => getFormat(path).Write(path, this);
+        {
+            using (var stream = new FileStream(path, FileMode.Create))
+                Write(stream, GetFormat(path));
+        }
 
-        private static Format getFormat(string path)
+        public static Format GetFormat(string path)
         {
             var extension = Path.GetExtension(path);
             switch (Path.GetExtension(path))
