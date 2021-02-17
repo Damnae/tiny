@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>Damnae.Tiny</id>
+    <version>1.0</version>
+    <title>tiny</title>
+    <authors>Damnae</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/Damnae/tiny</projectUrl>
+    <description>Lightweight yaml subset parser/writer.</description>
+    <releaseNotes>First version</releaseNotes>
+    <copyright>Damnae 2021</copyright>
+    <tags>yaml json</tags>
+  </metadata>
+</package>

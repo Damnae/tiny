@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("tiny")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Lightweight yaml subset parser/writer.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Damnae")]
 [assembly: AssemblyProduct("tiny")]
-[assembly: AssemblyCopyright("Copyright ©Damnae 2019")]
+[assembly: AssemblyCopyright("Copyright ©Damnae 2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

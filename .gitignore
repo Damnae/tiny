@@ -3,6 +3,7 @@
 
 .vs/
 *.tmp
+*.nupkg
 
 packages/*
 !packages/repositories.config
