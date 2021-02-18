@@ -81,6 +81,9 @@ namespace Tiny
             if (targetType == typeof(object))
                 return (T)value;
 
+            if (targetType == typeof(TinyValue) || targetType == typeof(TinyToken))
+                return (T)(object)this;
+
             if (type == TinyTokenType.Null)
             {
                 if (targetType == typeof(TinyArray))
@@ -92,7 +95,7 @@ namespace Tiny
             if (targetType.IsEnum && (type == TinyTokenType.String || type == TinyTokenType.Integer))
             {
                 if (value == null)
-                    return default(T);
+                    return default;
 
                 return (T)Enum.Parse(targetType, value.ToString());
             }
@@ -100,7 +103,7 @@ namespace Tiny
             if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 if (value == null)
-                    return default(T);
+                    return default;
 
                 targetType = Nullable.GetUnderlyingType(targetType);
             }

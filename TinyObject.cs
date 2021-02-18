@@ -37,7 +37,7 @@ namespace Tiny
             {
                 if (properties.TryGetValue(k, out var property))
                     return property.Value.Value<T>();
-                else return default(T);
+                else return default;
             }
             else if (key is int index)
                 return properties[index].Value.Value<T>();
