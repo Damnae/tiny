@@ -54,6 +54,7 @@
     <Compile Include="Formats\RegexTokenizer.cs" />
     <Compile Include="Formats\Yaml\YamlTokenParser.cs" />
     <Compile Include="Formats\Yaml\YamlUtil.cs" />
+    <Compile Include="TinyTokenExtensions.cs" />
     <Compile Include="TinyValue.cs" />
   </ItemGroup>
   <ItemGroup />
