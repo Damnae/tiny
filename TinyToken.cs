@@ -107,8 +107,11 @@ namespace Tiny
             var extension = Path.GetExtension(path);
             switch (Path.GetExtension(path))
             {
-                case ".yaml": return new YamlFormat();
-                case ".json": return new JsonFormat();
+                case ".yml":
+                case ".yaml":
+                    return new YamlFormat();
+                case ".json":
+                    return new JsonFormat();
             }
             throw new NotImplementedException($"No format matches extension '{extension}'.");
         }
