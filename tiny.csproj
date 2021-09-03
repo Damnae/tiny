@@ -1,62 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{520E33D3-E022-4581-ACD8-BED838BC817E}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tiny</RootNamespace>
-    <AssemblyName>Tiny</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <TargetFramework>net5.0</TargetFramework>
+    <Version>1.2.0</Version>
+    <PackageId>Damnae.Tiny</PackageId>
+    <Authors>Damnae</Authors>
+    <Company />
+    <Description>Lightweight yaml subset parser/writer.</Description>
+    <Copyright>Damnae 2021</Copyright>
+    <PackageTags>yaml json</PackageTags>
+    <PackageReleaseNotes>.net 5.0</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/Damnae/tiny</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Formats\Format.cs" />
-    <Compile Include="Formats\Json\JsonFormat.cs" />
-    <Compile Include="Formats\Json\JsonTokenType.cs" />
-    <Compile Include="Formats\Json\JsonTokenParser.cs" />
-    <Compile Include="Formats\Json\JsonUtil.cs" />
-    <Compile Include="Formats\Token.cs" />
-    <Compile Include="Formats\ParseContext.cs" />
-    <Compile Include="Formats\Parser.cs" />
-    <Compile Include="Formats\Yaml\YamlFormat.cs" />
-    <Compile Include="Formats\Yaml\YamlTokenType.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TinyArray.cs" />
-    <Compile Include="TinyObject.cs" />
-    <Compile Include="TinyToken.cs" />
-    <Compile Include="Formats\RegexTokenizer.cs" />
-    <Compile Include="Formats\Yaml\YamlTokenParser.cs" />
-    <Compile Include="Formats\Yaml\YamlUtil.cs" />
-    <Compile Include="TinyTokenExtensions.cs" />
-    <Compile Include="TinyValue.cs" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>
